@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import traceback
 from django.core.management import BaseCommand
 from multisync.ldap_synchronizers import LdapUserSynchronizer, LdapGroupSynchronizer, LdapUserGroupsSynchronizer
 
@@ -62,7 +63,8 @@ class NrpeCheck(BaseCommand):
             exit_code, output = self.synchronize(exit_code)
         except Exception as e:
             exit_code = 3
-            output = '%s: %s' % (e.__class__.__name__, e)
+            output = '%s: %s\n' % (e.__class__.__name__, e)
+            output += traceback.format_exc()
 
         if exit_code == 0:
             self.stdout.write('OK - all users and groups are valid\n')
