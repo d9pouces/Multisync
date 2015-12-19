@@ -14,3 +14,20 @@ LDAP_USER = 'cn=admin,dc=test,dc=example,dc=org'
 LDAP_PASSWORD = 'toto'
 
 SYNCHRONIZER = 'multisync.django_synchronizers.DjangoSynchronizer'
+
+DATABASES = {
+    'default': {
+        'ENGINE': '{DATABASE_ENGINE}',
+        'NAME': '{DATABASE_NAME}',
+        'USER': '{DATABASE_USER}',
+        'PASSWORD': '{DATABASE_PASSWORD}',
+        'HOST': '{DATABASE_HOST}',
+        'PORT': '{DATABASE_PORT}',
+    },
+    'ldap': {
+        'ENGINE': 'ldapdb.backends.ldap',
+        'NAME': '{LDAP_NAME}',
+        'USER': '{LDAP_USER}',
+        'PASSWORD': '{LDAP_PASSWORD}',
+    },
+}
