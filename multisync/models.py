@@ -126,4 +126,4 @@ class PenatesserverDjangouserGroups(models.Model):
     class Meta(object):
         managed = False
         db_table = 'penatesserver_djangouser_groups'
-        unique_together = (('djangouser', 'group'),)
+        unique_together = (('djangouser', 'group_id'),)
