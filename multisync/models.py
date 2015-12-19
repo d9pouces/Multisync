@@ -3,7 +3,9 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.core.validators import RegexValidator
+from django.db import models
 
 from ldapdb.models.fields import CharField, IntegerField, ListField, ImageField as ImageField_
 import ldapdb.models
@@ -96,3 +98,32 @@ class LdapUser(BaseLdapModel):
     ast_account_disallowed_codec = CharField(db_column=force_bytestring('AstAccountDisallowedCodec'), default='all')
     ast_account_allowed_codec = CharField(db_column=force_bytestring('AstAccountAllowedCodec'), default='ulaw')
     ast_account_music_on_hold = CharField(db_column=force_bytestring('AstAccountMusicOnHold'), default='default')
+
+
+class PenatesserverDjangouser(models.Model):
+    id = models.IntegerField(primary_key=True)
+    password = models.CharField(max_length=128)
+    last_login = models.DateTimeField(blank=True, null=True)
+    is_superuser = models.BooleanField()
+    username = models.CharField(unique=True, max_length=250)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    email = models.CharField(max_length=254)
+    is_staff = models.BooleanField()
+    is_active = models.BooleanField()
+    date_joined = models.DateTimeField()
+
+    class Meta(object):
+        managed = False
+        db_table = 'penatesserver_djangouser'
+
+
+class PenatesserverDjangouserGroups(models.Model):
+    id = models.IntegerField(primary_key=True)  # AutoField?
+    djangouser = models.ForeignKey(PenatesserverDjangouser)
+    group = models.ForeignKey(Group)
+
+    class Meta(object):
+        managed = False
+        db_table = 'penatesserver_djangouser_groups'
+        unique_together = (('djangouser', 'group'),)

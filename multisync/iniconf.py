@@ -18,8 +18,10 @@ INI_MAPPING = [
     OptionParser('LDAP_USER', 'ldap.user'),
     OptionParser('LDAP_PASSWORD', 'ldap.password'),
 
-    OptionParser('SYNCHRONIZER', 'global.synchronizer'),
+    OptionParser('SYNCHRONIZER', 'multisync.synchronizer'),
     OptionParser('ADMIN_EMAIL', 'global.admin_email'),
     OptionParser('TIME_ZONE', 'global.time_zone'),
     OptionParser('LANGUAGE_CODE', 'global.language_code'),
-]
+    OptionParser('FLOOR_DEFAULT_GROUP_NAME', 'global.default_group'),
+
+    ]
