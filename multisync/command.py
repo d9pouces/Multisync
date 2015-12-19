@@ -20,7 +20,8 @@ def main():
     os.environ['DJANGOFLOOR_PROJECT_NAME'] = 'multisync'
 
     set_env()
-
+    import django
+    django.setup()
     from django.conf import settings
     nrpe_check_cls = import_string(settings.SYNCHRONIZER)
     nrpe_check = nrpe_check_cls()

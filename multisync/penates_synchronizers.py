@@ -1,70 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import Group
-from multisync.django_synchronizers import DjangoGroupSynchronizer
 
-from multisync.ldap_synchronizers import LdapUserSynchronizer, LdapUserGroupsSynchronizer
-from multisync.models import LdapUser, PenatesserverDjangouser, PenatesserverDjangouserGroups
+from multisync.django_synchronizers import DjangoGroupSynchronizer, DjangoUserSynchronizer
+
+from multisync.ldap_synchronizers import LdapUserGroupsSynchronizer
+from multisync.models import PenatesserverDjangouser, PenatesserverDjangouserGroups
 from multisync.nrpe import NrpeCheck
-from multisync.synchronizer import is_admin, guess_name_components
 
 
 __author__ = 'Matthieu Gallet'
 
 
-class PenatesUserSynchronizer(LdapUserSynchronizer):
-
-    def get_copy_elements(self):
-        return PenatesserverDjangouser.objects.all()
-
-    def prepare_delete_copy_element(self, copy_element):
-        assert isinstance(copy_element, PenatesserverDjangouser)
-        if copy_element.is_superuser:
-            self.error_ids.append(copy_element.username)
-        self.deleted_ids.append(copy_element.username)
-        return copy_element.pk
-
-    def get_copy_to_id(self, copy_element):
-        assert isinstance(copy_element, PenatesserverDjangouser)
-        return copy_element.username
-
-    def delete_copy_elements(self, prepared_copy_elements):
-        PenatesserverDjangouser.objects.filter(pk__in=prepared_copy_elements).delete()
-
-    def prepare_new_copy_element(self, ref_element):
-        assert isinstance(ref_element, LdapUser)
-        copy_element = PenatesserverDjangouser(username=ref_element.name)
-        self.sync_element(copy_element, ref_element)
-        self.created_ids.append(ref_element.name)
-        return copy_element
-
-    def sync_element(self, copy_element, ref_element):
-        if copy_element.is_superuser and not is_admin(copy_element.username):
-            self.error_ids.append(copy_element.username)
-        must_save = copy_element.is_superuser != is_admin(copy_element.username)
-        copy_element.is_superuser = is_admin(copy_element.username)
-        must_save |= copy_element.is_superuser != copy_element.is_staff
-        copy_element.is_staff = copy_element.is_superuser
-        must_save |= copy_element.email != ref_element.mail
-        copy_element.email = ref_element.mail
-        first_name, last_name = guess_name_components(ref_element.display_name)
-        if copy_element.first_name != first_name:
-            copy_element.first_name = first_name
-            must_save = True
-        if copy_element.last_name != last_name:
-            copy_element.last_name = last_name
-            must_save = True
-        return must_save
-
-    def update_copy_element(self, copy_element, ref_element):
-        assert isinstance(copy_element, PenatesserverDjangouser)
-        assert isinstance(ref_element, LdapUser)
-        save = self.sync_element(copy_element, ref_element)
-        if save:
-            copy_element.save()
-            self.modified_ids.append(copy_element.username)
-
-    def create_copy_elements(self, prepared_copy_elements):
-        PenatesserverDjangouser.objects.bulk_create(prepared_copy_elements)
+class PenatesUserSynchronizer(DjangoUserSynchronizer):
+    user_cls = PenatesserverDjangouser
 
 
 class PenatesUserGroupsSynchronizer(LdapUserGroupsSynchronizer):

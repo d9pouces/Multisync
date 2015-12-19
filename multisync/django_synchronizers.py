@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group, User
 
 from multisync.ldap_synchronizers import LdapUserSynchronizer, LdapGroupSynchronizer, LdapUserGroupsSynchronizer
 from multisync.models import LdapUser, LdapGroup
@@ -11,27 +11,28 @@ __author__ = 'Matthieu Gallet'
 
 
 class DjangoUserSynchronizer(LdapUserSynchronizer):
+    user_cls = User
 
     def get_copy_elements(self):
-        return User.objects.all()
+        return self.user_cls.objects.all()
 
     def prepare_delete_copy_element(self, copy_element):
-        assert isinstance(copy_element, User)
+        assert isinstance(copy_element, self.user_cls)
         if copy_element.is_superuser:
             self.error_ids.append(copy_element.username)
         self.deleted_ids.append(copy_element.username)
         return copy_element.pk
 
     def get_copy_to_id(self, copy_element):
-        assert isinstance(copy_element, User)
+        assert isinstance(copy_element, self.user_cls)
         return copy_element.username
 
     def delete_copy_elements(self, prepared_copy_elements):
-        User.objects.filter(pk__in=prepared_copy_elements).delete()
+        self.user_cls.objects.filter(pk__in=prepared_copy_elements).delete()
 
     def prepare_new_copy_element(self, ref_element):
         assert isinstance(ref_element, LdapUser)
-        copy_element = User(username=ref_element.name)
+        copy_element = self.user_cls(username=ref_element.name)
         self.sync_element(copy_element, ref_element)
         self.created_ids.append(ref_element.name)
         return copy_element
@@ -55,7 +56,7 @@ class DjangoUserSynchronizer(LdapUserSynchronizer):
         return must_save
 
     def update_copy_element(self, copy_element, ref_element):
-        assert isinstance(copy_element, User)
+        assert isinstance(copy_element, self.user_cls)
         assert isinstance(ref_element, LdapUser)
         save = self.sync_element(copy_element, ref_element)
         if save:
@@ -63,7 +64,7 @@ class DjangoUserSynchronizer(LdapUserSynchronizer):
             self.modified_ids.append(copy_element.username)
 
     def create_copy_elements(self, prepared_copy_elements):
-        User.objects.bulk_create(prepared_copy_elements)
+        self.user_cls.objects.bulk_create(prepared_copy_elements)
 
 
 class DjangoGroupSynchronizer(LdapGroupSynchronizer):
