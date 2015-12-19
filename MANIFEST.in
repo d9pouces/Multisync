@@ -1,0 +1,3 @@
+recursive-include multisync *
+exclude .git .svn
+include LICENSE README.md
