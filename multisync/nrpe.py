@@ -14,50 +14,47 @@ class NrpeCheck(BaseCommand):
     synchronizer_group_cls = None
     synchronizer_usergroup_cls = None
 
-    def __init__(self):
-        super(NrpeCheck, self).__init__()
-        self.synchronizer_user = self.synchronizer_user_cls()
-        self.synchronizer_group = self.synchronizer_group_cls()
-        self.synchronizer_usergroup = self.synchronizer_usergroup_cls()
-
     def synchronize(self, exit_code):
         output = ''
-        self.synchronizer_user.synchronize()
-        if self.synchronizer_user.error_ids:
-            output += ('Users that should not be admin: %s\n' % ', '.join(self.synchronizer_user.error_ids))
+
+        synchronizer = self.synchronizer_user_cls()
+        synchronizer.synchronize()
+        if synchronizer.error_ids:
+            output += ('Users that should not be admin: %s\n' % ', '.join(synchronizer.error_ids))
             exit_code = max(exit_code, 2)
-        if self.synchronizer_user.modified_ids:
-            output += ('Modified users: %s\n' % ', '.join(self.synchronizer_user.modified_ids))
+        if synchronizer.modified_ids:
+            output += ('Modified users: %s\n' % ', '.join(synchronizer.modified_ids))
             exit_code = max(exit_code, 1)
-        if self.synchronizer_user.deleted_ids:
-            output += ('Deleted users: %s\n' % ', '.join(self.synchronizer_user.deleted_ids))
+        if synchronizer.deleted_ids:
+            output += ('Deleted users: %s\n' % ', '.join(synchronizer.deleted_ids))
             exit_code = max(exit_code, 2)
-        if self.synchronizer_user.created_ids:
-            output += ('Created users: %s\n' % ', '.join(self.synchronizer_user.created_ids))
+        if synchronizer.created_ids:
+            output += ('Created users: %s\n' % ', '.join(synchronizer.created_ids))
             exit_code = max(exit_code, 1)
-        self.synchronizer_group.synchronize()
-        if self.synchronizer_group.created_ids:
-            output += ('Created groups: %s\n' % ', '.join(self.synchronizer_group.created_ids))
+
+        synchronizer = self.synchronizer_group_cls()
+        synchronizer.synchronize()
+        if synchronizer.created_ids:
+            output += ('Created groups: %s\n' % ', '.join(synchronizer.created_ids))
             exit_code = max(exit_code, 1)
-        if self.synchronizer_group.deleted_ids:
-            output += ('Deleted groups: %s\n' % ', '.join(self.synchronizer_group.deleted_ids))
+        if synchronizer.deleted_ids:
+            output += ('Deleted groups: %s\n' % ', '.join(synchronizer.deleted_ids))
             exit_code = max(exit_code, 1)
-        self.synchronizer_usergroup.synchronize()
-        if self.synchronizer_group.created_ids:
-            for group_name, user_names in self.synchronizer_group.created_ids.items():
+
+        synchronizer = self.synchronizer_usergroup_cls()
+        synchronizer.synchronize()
+        if synchronizer.created_ids:
+            for group_name, user_names in synchronizer.created_ids.items():
                 output += ('Added to %s: %s\n' % (group_name, ', '.join(user_names)))
             exit_code = max(exit_code, 1)
-        if self.synchronizer_group.deleted_ids:
-            for group_name, user_names in self.synchronizer_group.deleted_ids.items():
+        if synchronizer.deleted_ids:
+            for group_name, user_names in synchronizer.deleted_ids.items():
                 output += ('Removed from %s: %s\n' % (group_name, ', '.join(user_names)))
             exit_code = max(exit_code, 1)
         return exit_code, output
 
     def handle(self, *args, **options):
         exit_code = 0
-        assert isinstance(self.synchronizer_user, LdapUserSynchronizer)
-        assert isinstance(self.synchronizer_group, LdapGroupSynchronizer)
-        assert isinstance(self.synchronizer_usergroup, LdapUserGroupsSynchronizer)
 
         try:
             exit_code, output = self.synchronize(exit_code)
