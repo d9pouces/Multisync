@@ -121,7 +121,7 @@ class PenatesserverDjangouser(models.Model):
 class PenatesserverDjangouserGroups(models.Model):
     id = models.IntegerField(primary_key=True)  # AutoField?
     djangouser = models.ForeignKey(PenatesserverDjangouser)
-    group = models.ForeignKey(Group)
+    group_id = models.IntegerField()
 
     class Meta(object):
         managed = False
