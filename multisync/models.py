@@ -101,7 +101,6 @@ class LdapUser(BaseLdapModel):
 
 
 class PenatesserverDjangouser(models.Model):
-    id = models.IntegerField(primary_key=True)
     password = models.CharField(max_length=128)
     last_login = models.DateTimeField(blank=True, null=True)
     is_superuser = models.BooleanField()
@@ -119,7 +118,6 @@ class PenatesserverDjangouser(models.Model):
 
 
 class PenatesserverDjangouserGroups(models.Model):
-    id = models.IntegerField(primary_key=True)  # AutoField?
     djangouser = models.ForeignKey(PenatesserverDjangouser)
     group_id = models.IntegerField()
 
