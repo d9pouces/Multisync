@@ -36,7 +36,7 @@ class PenatesUserGroupsSynchronizer(LdapUserGroupsSynchronizer):
     def prepare_new_copy_element(self, ref_element):
         group_name, user_name = ref_element
         self.created_ids.setdefault(group_name, []).append(user_name)
-        return PenatesserverDjangouserGroups(user_id=self.user_name_to_id[user_name],
+        return PenatesserverDjangouserGroups(djangouser_id=self.user_name_to_id[user_name],
                                              group_id=self.group_name_to_id[group_name])
 
     def prepare_delete_copy_element(self, copy_element):
@@ -44,7 +44,7 @@ class PenatesUserGroupsSynchronizer(LdapUserGroupsSynchronizer):
         user_name = self.user_id_to_name[copy_element.djangouser_id]
         self.deleted_ids.setdefault(group_name, []).append(user_name)
         PenatesserverDjangouserGroups.objects\
-            .filter(user__id=copy_element.djangouser_id, group_id=copy_element.group_id).delete()
+            .filter(djangouser__id=copy_element.djangouser_id, group_id=copy_element.group_id).delete()
 
     def delete_copy_elements(self, prepared_copy_elements):
         pass
