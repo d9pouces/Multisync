@@ -14,7 +14,8 @@ def main():
     options = parser.parse_args()
 
     ini_settings_path = options.conf
-    os.environ.setdefault("DJANGOFLOOR_INI_SETTINGS", os.path.abspath(ini_settings_path))
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'djangofloor.settings'
+    os.environ['DJANGOFLOOR_INI_SETTINGS'] = os.path.abspath(ini_settings_path)
     set_env()
 
     from django.conf import settings
