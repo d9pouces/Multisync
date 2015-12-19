@@ -31,3 +31,5 @@ DATABASES = {
         'PASSWORD': '{LDAP_PASSWORD}',
     },
 }
+
+DATABASE_ROUTERS = ['ldapdb.router.Router', ]
