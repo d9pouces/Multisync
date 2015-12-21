@@ -70,5 +70,5 @@ class NrpeCheck(BaseCommand):
             self.stdout.write('CRITICAL - ')
         elif exit_code == 3:
             self.stdout.write('UNKNOWN - Unable to synchronize\n')
-        self.stdout.write(output)
+        self.stdout.write(output.strip())
         return exit_code
