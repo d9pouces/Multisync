@@ -19,6 +19,8 @@ INI_MAPPING = [
     OptionParser('LDAP_PASSWORD', 'ldap.password'),
 
     OptionParser('SYNCHRONIZER', 'multisync.synchronizer'),
+    OptionParser('PROSODY_GROUP_FILE', 'prosody.group_file'),
+    OptionParser('PROSODY_DOMAIN', 'prosody.domain'),
     OptionParser('ADMIN_EMAIL', 'global.admin_email'),
     OptionParser('TIME_ZONE', 'global.time_zone'),
     OptionParser('LANGUAGE_CODE', 'global.language_code'),

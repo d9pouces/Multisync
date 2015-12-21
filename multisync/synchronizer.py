@@ -59,6 +59,7 @@ class Synchronizer(object):
         return copy_elements
 
     def synchronize(self):
+        self.set_up()
         ref_elements = self.get_ref_elements()
         copy_elements = self.get_copy_elements()
         ref_dict = {self.get_ref_to_id(x): x for x in self.filter_ref_elements(ref_elements)}
@@ -72,6 +73,13 @@ class Synchronizer(object):
                 self.update_copy_element(copy_dict[id_], ref_element)
         self.delete_copy_elements(prepared_delete_copy_elements)
         self.create_copy_elements(prepared_new_copy_elements)
+        self.tear_down()
+
+    def set_up(self):
+        pass
+
+    def tear_down(self):
+        pass
 
     def get_ref_to_id(self, ref_element):
         raise NotImplementedError

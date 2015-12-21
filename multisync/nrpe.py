@@ -14,8 +14,9 @@ class NrpeCheck(BaseCommand):
     synchronizer_group_cls = None
     synchronizer_usergroup_cls = None
 
-    def synchronize(self, exit_code):
+    def synchronize(self):
         output = ''
+        exit_code = 0
 
         synchronizer = self.synchronizer_user_cls()
         synchronizer.synchronize()
@@ -54,10 +55,8 @@ class NrpeCheck(BaseCommand):
         return exit_code, output
 
     def handle(self, *args, **options):
-        exit_code = 0
-
         try:
-            exit_code, output = self.synchronize(exit_code)
+            exit_code, output = self.synchronize()
         except Exception as e:
             exit_code = 3
             output = '%s: %s\n' % (e.__class__.__name__, e)

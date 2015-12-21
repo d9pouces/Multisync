@@ -33,3 +33,6 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = ['ldapdb.router.Router', ]
+
+PROSODY_GROUP_FILE = '{LOCAL_PATH}/groups.ini'
+PROSODY_DOMAIN = 'im.example.org'
