@@ -17,11 +17,11 @@ class ProsodySynchronizer(NrpeCheck):
         users = {x.name: x.display_name for x in LdapUser.objects.all()}
         parser = ConfigParser()
         for group in LdapGroup.objects.all():
-            group = group.encode('utf-8')
-            parser.add_section(group)
+            group_name = group.name.encode('utf-8')
+            parser.add_section(group_name)
             for username in group.members:
                 username = username.encode('utf-8')
-                parser.set(group, '%s@%s' % (username, settings.PROSODY_DOMAIN), users.get(username, username))
+                parser.set(group_name, '%s@%s' % (username, settings.PROSODY_DOMAIN), users.get(username, username))
         with open(settings.PROSODY_GROUP_FILE + '.tmp', 'w') as fd:
             parser.write(fd)
         os.rename(settings.PROSODY_GROUP_FILE + '.tmp', settings.PROSODY_GROUP_FILE)
