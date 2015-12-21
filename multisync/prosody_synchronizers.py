@@ -25,3 +25,4 @@ class ProsodySynchronizer(NrpeCheck):
         with open(settings.PROSODY_GROUP_FILE + '.tmp', 'w') as fd:
             parser.write(fd)
         os.rename(settings.PROSODY_GROUP_FILE + '.tmp', settings.PROSODY_GROUP_FILE)
+        return 0, 'OK - all groups are synchronized'
