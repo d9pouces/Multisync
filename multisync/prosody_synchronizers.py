@@ -21,7 +21,8 @@ class ProsodySynchronizer(NrpeCheck):
             parser.add_section(group_name)
             for username in group.members:
                 username = username.encode('utf-8')
-                parser.set(group_name, '%s@%s' % (username, settings.PROSODY_DOMAIN), users.get(username, username))
+                parser.set(group_name, '%s@%s' % (username, settings.PROSODY_DOMAIN),
+                           users.get(username).strip() or username)
         with open(settings.PROSODY_GROUP_FILE + '.tmp', 'w') as fd:
             parser.write(fd)
         os.rename(settings.PROSODY_GROUP_FILE + '.tmp', settings.PROSODY_GROUP_FILE)
