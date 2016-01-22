@@ -48,7 +48,7 @@ class BaseLdapModel(ldapdb.models.Model):
 
 
 class LdapGroup(BaseLdapModel):
-    base_dn = 'ou=Groups,' + settings.LDAP_BASE_DN
+    base_dn = '%s,%s' % (settings.LDAP_GROUP_OU, settings.LDAP_BASE_DN)
     object_classes = force_bytestrings(['posixGroup', 'sambaGroupMapping'])
     # posixGroup attributes
     name = CharField(db_column=force_bytestring('cn'), max_length=200, primary_key=True,
@@ -61,7 +61,7 @@ class LdapGroup(BaseLdapModel):
 
 
 class LdapUser(BaseLdapModel):
-    base_dn = 'ou=Users,' + settings.LDAP_BASE_DN
+    base_dn = '%s,%s' % (settings.LDAP_USER_OU, settings.LDAP_BASE_DN)
     object_classes = force_bytestrings(['posixAccount', 'shadowAccount', 'inetOrgPerson', 'sambaSamAccount', 'person',
                                         'AsteriskSIPUser'])
     name = CharField(db_column=force_bytestring('uid'), max_length=200, primary_key=True,

@@ -1,8 +1,39 @@
 .. MultiSync documentation master file, created by
-   sphinx-quickstart on Wed Feb 13 11:51:12 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-MultiSync
-=========
+Welcome to MultiSync's documentation!
+=====================================
+
+
+
+:doc:`installation`
+    Instruction on how to get the distribution
+
+:doc:`configuration`
+    All configuration options
+
+:doc:`debian`
+    Packaging MultiSync for Debian or Ubuntu servers
+
+
+
+
+
+
+Full table of contents
+======================
+
+.. toctree::
+   :maxdepth: 1
+
+   installation
+   configuration
+   debian
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 

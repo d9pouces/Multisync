@@ -1,0 +1,46 @@
+{% extends "djangofloor/dev/doc/source/installation.rst_tpl" %}
+{% block webserver %}{% endblock %}
+{% block systemd %}{% endblock %}
+
+{% block database %}Database
+--------
+
+You should not have to create a user or a database for MultiSync since its role is to reuse the database/tables of an
+existing application.
+MultiSync is able to deal with all standard Django database servers: PostgreSQL, SQLite, MySQL or OracleDB.
+{% endblock %}
+
+
+{% block application %}Application
+-----------
+
+Now, it's time to install {{ FLOOR_PROJECT_NAME }}. In this example, we create a dedicated user, but you probably
+want to reuse the same user as the application to synchronize: that allows MultiSync to access to the same config' file
+since this file should not be readable by other users.
+
+.. code-block:: bash
+
+{% block pre_application %}{% endblock %}    sudo mkdir -p {{ LOCAL_PATH }}
+    sudo adduser --disabled-password {{ PROJECT_NAME }}
+    sudo chown {{ PROJECT_NAME }}:www-data {{ LOCAL_PATH }}
+    sudo apt-get install virtualenvwrapper {{ python_version }} {{ python_version }}-dev build-essential postgresql-client libpq-dev
+    # application
+    sudo -u {{ PROJECT_NAME }} -i
+    mkvirtualenv {{ PROJECT_NAME }} -p `which {{ python_version }}`
+    workon {{ PROJECT_NAME }}
+    pip install setuptools --upgrade
+    pip install pip --upgrade
+    pip install {{ PROJECT_NAME }} psycopg2 gevent
+    mkdir -p $VIRTUAL_ENV/etc/{{ PROJECT_NAME }}
+    cat << EOF > $VIRTUAL_ENV/etc/{{ PROJECT_NAME }}/settings.ini
+{% block ini_configuration %}{% for section in settings_merger.all_ini_options.items %}    [{{ section.0 }}]
+{% for option_parser in section.1 %}    {{ option_parser.key }} = {{ option_parser.str_value }}
+{% endfor %}{% endfor %}{% endblock %}    EOF
+{% endblock %}
+
+{% block supervisor %}
+Crontab
+-------
+MultiSync is designed to be launched via a crontab script.
+
+{% endblock %}
