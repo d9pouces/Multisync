@@ -4,13 +4,9 @@ Debian Installation
 By default, MultiSync is only packaged as a standard Python project, downloadable from `Pypi <https://pypi.python.org>`_.
 However, you can create pure Debian packages with `DjangoFloor <http://django-floor.readthedocs.org/en/latest/packaging.html#debian-ubuntu>`_.
 
-The source code provides several Bash scripts:
+The source code provides one Bash scripts,  `deb-debian-8_ubuntu-14.10-150.10.sh`.
 
-    * `deb-debian-7-python3.sh`,
-    * `deb-debian-8-python3.sh`,
-    * `deb-ubuntu-14.04-15.10.sh`.
-
-These scripts are designed to run on basic installation and are split in five steps:
+This script is designed to run on basic installation and are split in five steps:
 
     * update system and install missing packages,
     * create a virtualenv and install all dependencies,
@@ -19,9 +15,22 @@ These scripts are designed to run on basic installation and are split in five st
     * install all packages and MultiSync, prepare a simple configuration to test.
 
 If everything is ok, you can copy all the .deb packages to your private mirror or to the destination server.
-The configuration is set in `/etc/multisync/settings.ini`.
-By default, MultiSync is installed with Apache 2.2 (or 2.4) and Supervisor.
-You can switch to Nginx or Systemd by tweaking the right `stdeb-XXX.cfg` file.
+By default, MultiSync is installed with Apache 2.4 and systemd.
+You can switch to Nginx or supervisor by tweaking the right `stdeb-XXX.cfg` file.
+
+
+Configuration
+-------------
+
+Default configuration file is `/etc/multisync/settings.ini`.
+If you need more complex settings, you can override default values (given in `djangofloor.defaults` and
+`multisync.defaults`) by creating a file named `/etc/multisync/settings.py`.
+After any change in the database configuration or any upgrade, you must migrate the database to create the required tables.
+
+.. code-block:: bash
+
+    sudo -u multisync multisync-manage migrate
+
 
 After installation and configuration, do not forget to create a superuser:
 
@@ -30,9 +39,24 @@ After installation and configuration, do not forget to create a superuser:
     sudo -u multisync multisync-manage createsuperuser
 
 
-Default configuration file is `/etc/multisync/settings.ini`.
-If you need more complex settings, you can override default values (given in `djangofloor.defaults` and
-`multisync.defaults`) by creating a file named `/etc/multisync/settings.py`.
+
+
+
+Launch the service
+------------------
+
+The service can be stopped or started via the `service` command. By default, MultiSync is not started.
+
+.. code-block:: bash
+
+    sudo service multisync-gunicorn start
+
+
+If you want MultiSync to be started at startup, you have to enable it in systemd:
+
+.. code-block:: bash
+
+    systemctl enable multisync-gunicorn.service
 
 
 
@@ -98,7 +122,7 @@ If you have a lot of files to backup, beware of the available disk place!
   touch /var/backups/multisync/backup_media.tar.gz
   crontab -e
   MAILTO=admin@localhost
-  0 3 * * * rsync -arltDE ./django_data/data/media/ /var/backups/multisync/media/
+  0 3 * * * rsync -arltDE /home/mgallet/.virtualenvs/multisync/local/var/multisync/data/media/ /var/backups/multisync/media/
   0 5 0 * * logrotate -f /etc/multisync/backup_media.conf
 
 Restoring a backup
@@ -107,7 +131,7 @@ Restoring a backup
 .. code-block:: bash
 
   cat /var/backups/multisync/backup_db.sql.gz | gunzip | /usr/local/bin/multisync-manage dbshell
-  tar -C ./django_data/data/media/ -xf /var/backups/multisync/backup_media.tar.gz
+  tar -C /home/mgallet/.virtualenvs/multisync/local/var/multisync/data/media/ -xf /var/backups/multisync/backup_media.tar.gz
 
 
 
@@ -116,6 +140,9 @@ Restoring a backup
 Monitoring
 ----------
 
+
+Nagios or Shinken
+~~~~~~~~~~~~~~~~~
 
 You can use Nagios checks to monitor several points:
 
@@ -148,6 +175,16 @@ For using Sentry to log errors, you must add `raven.contrib.django.raven_compat`
 
   [global]
   extra_apps = raven.contrib.django.raven_compat
+  [sentry]
+  dsn_url = https://[key]:[secret]@app.getsentry.com/[project]
+
+Of course, the Sentry client (Raven) must be separately installed, before testing the installation:
+
+.. code-block:: bash
+
+  sudo -u multisync -i
+  multisync-manage raven test
+
 
 
 

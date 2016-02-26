@@ -39,9 +39,9 @@ since this file should not be readable by other users.
 
 .. code-block:: bash
 
-    sudo mkdir -p ./django_data
+    sudo mkdir -p /home/mgallet/.virtualenvs/multisync/local/var/multisync
     sudo adduser --disabled-password multisync
-    sudo chown multisync:www-data ./django_data
+    sudo chown multisync:www-data /home/mgallet/.virtualenvs/multisync/local/var/multisync
     sudo apt-get install virtualenvwrapper python2.7 python2.7-dev build-essential postgresql-client libpq-dev
     # application
     sudo -u multisync -i
@@ -55,7 +55,7 @@ since this file should not be readable by other users.
     [database]
     engine = django.db.backends.sqlite3
     host = 
-    name = ./django_data/data/database.sqlite3
+    name = /home/mgallet/.virtualenvs/multisync/local/var/multisync/data/database.sqlite3
     password = 
     port = 
     user = 
@@ -75,7 +75,7 @@ since this file should not be readable by other users.
     synchronizer = multisync.django_synchronizers.DjangoSynchronizer
     [prosody]
     domain = im.example.org
-    group_file = ./django_data/groups.ini
+    group_file = /home/mgallet/.virtualenvs/multisync/local/var/multisync/groups.ini
     EOF
 
 
