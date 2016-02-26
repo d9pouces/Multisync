@@ -7,9 +7,9 @@ sudo apt-get upgrade --yes
 sudo apt-get install --yes vim dh-make ntp rsync liblzma-dev tree
 sudo apt-get install --yes python-all-dev virtualenvwrapper \
     python-tz python-setuptools \
-    python-oauthlib \
-    apache2 libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap \
-    python-medusa python-meld3 ssl-cert python-msgpack
+    python-oauthlib python-sqlparse \
+    apache2 libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap gunicorn python-celery \
+    python-medusa python-meld3 ssl-cert python-msgpack python-gunicorn
 sudo apt-get install --yes python-ldap libldap2-dev libsasl2-dev python-futures
 source /etc/bash_completion.d/virtualenvwrapper
 
