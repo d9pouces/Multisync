@@ -8,7 +8,6 @@ from djangofloor.iniconf import OptionParser
 __author__ = 'Matthieu Gallet'
 
 
-
 INI_MAPPING = [
 
     OptionParser('DATABASE_ENGINE', 'database.engine'),
