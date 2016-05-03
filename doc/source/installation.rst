@@ -78,11 +78,9 @@ since this file should not be readable by other users.
     group_file = /home/mgallet/.virtualenvs/multisync/local/var/multisync/groups.ini
     EOF
 
-
-
 Crontab
 -------
-MultiSync is designed to be launched via a crontab script.
+MultiSync is designed to be launched via a crontab script or as Nagios check.
 
 
 
