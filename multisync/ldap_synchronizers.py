@@ -20,7 +20,7 @@ class LdapUserSynchronizer(Synchronizer):
         if settings.LDAP_USER_FILTER_KWARGS:
             query = query.filter(**settings.LDAP_USER_FILTER_KWARGS)
         if settings.LDAP_USER_EXCLUDE_KWARGS:
-            query = query.exclude(**settings.LDAP_USER_FILTER_KWARGS)
+            query = query.exclude(**settings.LDAP_USER_EXCLUDE_KWARGS)
         return query
 
     def get_ref_to_id(self, ref_element):
@@ -39,7 +39,7 @@ class LdapGroupSynchronizer(Synchronizer):
         if settings.LDAP_GROUP_FILTER_KWARGS:
             query = query.filter(**settings.LDAP_GROUP_FILTER_KWARGS)
         if settings.LDAP_GROUP_EXCLUDE_KWARGS:
-            query = query.exclude(**settings.LDAP_GROUP_FILTER_KWARGS)
+            query = query.exclude(**settings.LDAP_GROUP_EXCLUDE_KWARGS)
         return query
 
     def get_ref_to_id(self, ref_element):
@@ -62,7 +62,7 @@ class LdapUserGroupsSynchronizer(Synchronizer):
         if settings.LDAP_GROUP_FILTER_KWARGS:
             query = query.filter(**settings.LDAP_GROUP_FILTER_KWARGS)
         if settings.LDAP_GROUP_EXCLUDE_KWARGS:
-            query = query.exclude(**settings.LDAP_GROUP_FILTER_KWARGS)
+            query = query.exclude(**settings.LDAP_GROUP_EXCLUDE_KWARGS)
         for group in query:
             for username in group.members:
                 yield (group.name, username)
