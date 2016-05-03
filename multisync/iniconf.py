@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import json
+
 from djangofloor.iniconf import OptionParser
 
 __author__ = 'Matthieu Gallet'
+
+
 
 INI_MAPPING = [
 
@@ -19,6 +24,12 @@ INI_MAPPING = [
     OptionParser('LDAP_PASSWORD', 'ldap.password'),
     OptionParser('LDAP_GROUP_OU', 'ldap.group_ou'),
     OptionParser('LDAP_USER_OU', 'ldap.user_ou'),
+
+    OptionParser('LDAP_GROUP_FILTER_KWARGS', 'ldap.group_filter', converter=json.loads, to_str=json.dumps),
+    OptionParser('LDAP_GROUP_EXCLUDE_KWARGS', 'ldap.group_exclude', converter=json.loads, to_str=json.dumps),
+    OptionParser('LDAP_USER_FILTER_KWARGS', 'ldap.user_filter', converter=json.loads, to_str=json.dumps),
+    OptionParser('LDAP_USER_EXCLUDE_KWARGS', 'ldap.user_exclude', converter=json.loads, to_str=json.dumps),
+
 
     OptionParser('SYNCHRONIZER', 'multisync.synchronizer'),
     OptionParser('PROSODY_GROUP_FILE', 'prosody.group_file'),

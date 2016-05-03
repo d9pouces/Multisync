@@ -20,6 +20,10 @@ LDAP_USER = 'cn=admin,dc=test,dc=example,dc=org'
 LDAP_USER_HELP = 'LDAP user name to bind with'
 LDAP_PASSWORD = 'toto'
 LDAP_PASSWORD_HELP = 'LDAP password to bind with'
+LDAP_GROUP_FILTER_KWARGS = {}
+LDAP_GROUP_EXCLUDE_KWARGS = {}
+LDAP_USER_FILTER_KWARGS = {}
+LDAP_USER_EXCLUDE_KWARGS = {}
 
 SYNCHRONIZER = 'multisync.django_synchronizers.DjangoSynchronizer'
 

@@ -2,13 +2,11 @@
 
 from __future__ import unicode_literals
 
+import ldapdb.models
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.core.validators import RegexValidator
 from django.db import models
-
 from ldapdb.models.fields import CharField, IntegerField, ListField, ImageField as ImageField_
-import ldapdb.models
 
 
 __author__ = 'flanker'
