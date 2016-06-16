@@ -24,10 +24,7 @@ Database
 
 You should not have to create a user or a database for MultiSync since its role is to reuse the database/tables of an
 existing application.
-MultiSync is able to deal with all standard Django database servers: PostgreSQL, SQLite, MySQL or OracleDB.
-
-
-
+MultiSync deals with all standard Django database servers: PostgreSQL, SQLite, MySQL or OracleDB.
 
 
 Application
@@ -80,7 +77,7 @@ since this file should not be readable by other users.
 
 Crontab
 -------
-MultiSync is designed to be launched via a crontab script or as Nagios check.
+MultiSync is designed to be launched via a crontab script, but can also be run as a plain Nagios check (if nagios as a read access to the conf).
 
 
 

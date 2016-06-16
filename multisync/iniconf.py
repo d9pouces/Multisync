@@ -16,6 +16,10 @@ INI_MAPPING = [
     OptionParser('DATABASE_PASSWORD', 'database.password'),
     OptionParser('DATABASE_HOST', 'database.host'),
     OptionParser('DATABASE_PORT', 'database.port'),
+    OptionParser('DATABASE_GROUP_FILTER_KWARGS', 'database.group_filter', converter=json.loads, to_str=json.dumps),
+    OptionParser('DATABASE_GROUP_EXCLUDE_KWARGS', 'database.group_exclude', converter=json.loads, to_str=json.dumps),
+    OptionParser('DATABASE_USER_FILTER_KWARGS', 'database.user_filter', converter=json.loads, to_str=json.dumps),
+    OptionParser('DATABASE_USER_EXCLUDE_KWARGS', 'database.user_exclude', converter=json.loads, to_str=json.dumps),
 
     OptionParser('LDAP_BASE_DN', 'ldap.base_dn'),
     OptionParser('LDAP_NAME', 'ldap.name'),
