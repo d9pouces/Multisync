@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
-from ConfigParser import ConfigParser
+try:
+    # noinspection PyUnresolvedReferences,PyCompatibility
+    from ConfigParser import ConfigParser
+except ImportError:
+    # noinspection PyUnresolvedReferences,PyCompatibility
+    from configparser import ConfigParser
 
 from django.conf import settings
 
