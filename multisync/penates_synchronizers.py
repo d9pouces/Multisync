@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from multisync.django_synchronizers import DjangoGroupSynchronizer, DjangoUserSynchronizer
 
 from multisync.ldap_synchronizers import LdapUserGroupsSynchronizer
-from multisync.models import PenatesserverDjangouser, PenatesserverDjangouserGroups
+from multisync.models import PenatesserverDjangouser, PenatesserverDjangouserGroups, PenatesserverDjangoGroup
 from multisync.nrpe import NrpeCheck
 
 
@@ -54,6 +54,7 @@ class PenatesUserGroupsSynchronizer(LdapUserGroupsSynchronizer):
 
 
 class PenatesGroupSynchronizer(DjangoGroupSynchronizer):
+    group_cls = PenatesserverDjangoGroup
 
     def delete_copy_elements(self, prepared_copy_elements):
         super(PenatesGroupSynchronizer, self).delete_copy_elements(prepared_copy_elements)
@@ -62,5 +63,5 @@ class PenatesGroupSynchronizer(DjangoGroupSynchronizer):
 
 class PenatesSynchronizer(NrpeCheck):
     synchronizer_user_cls = PenatesUserSynchronizer
-    synchronizer_group_cls = DjangoGroupSynchronizer
+    synchronizer_group_cls = PenatesGroupSynchronizer
     synchronizer_usergroup_cls = PenatesUserGroupsSynchronizer

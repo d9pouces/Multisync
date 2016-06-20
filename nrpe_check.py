@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Matthieu Gallet'
+from __future__ import unicode_literals
 from multisync.command import main
+__author__ = 'Matthieu Gallet'
 
 main()

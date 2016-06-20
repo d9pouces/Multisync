@@ -26,7 +26,7 @@ LDAP_USER_FILTER_KWARGS = {}
 LDAP_USER_EXCLUDE_KWARGS = {}
 
 SYNCHRONIZER = 'multisync.django_synchronizers.DjangoSynchronizer'
-
+AUTH_USER_MODEL = 'auth.User'
 DATABASES = {
     'default': {
         'ENGINE': '{DATABASE_ENGINE}',

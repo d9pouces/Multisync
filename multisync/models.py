@@ -4,8 +4,12 @@ from __future__ import unicode_literals
 
 import ldapdb.models
 from django.conf import settings
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import UserManager, PermissionsMixin
+from django.core import validators
 from django.core.validators import RegexValidator
 from django.db import models
+from django.utils import timezone
 from ldapdb.models.fields import CharField, IntegerField, ListField, ImageField as ImageField_
 
 
@@ -26,6 +30,7 @@ def force_bytestring(x):
     return x.encode('utf-8')
 
 
+# noinspection PyClassHasNoInit
 class ImageField(ImageField_):
     def get_internal_type(self):
         return 'CharField'
@@ -98,28 +103,34 @@ class LdapUser(BaseLdapModel):
     ast_account_music_on_hold = CharField(db_column=force_bytestring('AstAccountMusicOnHold'), default='default')
 
 
-class PenatesserverDjangouser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.BooleanField(default=False)
-    username = models.CharField(unique=True, max_length=250)
-    first_name = models.CharField(max_length=30, default='')
-    last_name = models.CharField(max_length=30, default='')
-    email = models.CharField(max_length=254, default='')
-    is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    date_joined = models.DateTimeField(auto_now_add=True)
+class Djangouser(AbstractBaseUser, PermissionsMixin):
+    username = models.CharField('username', max_length=250, unique=True,
+                                help_text='Required. Letters, digits and "/"/@/./+/-/_ only.',
+                                validators=[validators.RegexValidator(r'^[/\w.@+_\-]+$', 'Enter a valid username. ',
+                                                                      'invalid'), ])
+    first_name = models.CharField('first name', max_length=30, blank=True)
+    last_name = models.CharField('last name', max_length=30, blank=True)
+    email = models.EmailField('email address', blank=True)
+    is_staff = models.BooleanField('staff status', default=False,
+                                   help_text='Designates whether the user can log into this admin site.')
+    is_active = models.BooleanField('active', default=True,
+                                    help_text=('Designates whether this user should be treated as '
+                                               'active. Unselect this instead of deleting accounts.'))
+    date_joined = models.DateTimeField('date joined', default=timezone.now)
+
+    objects = UserManager()
 
     class Meta(object):
         managed = False
         db_table = 'penatesserver_djangouser'
 
+    def get_full_name(self):
+        """
+        Returns the first_name plus the last_name, with a space in between.
+        """
+        full_name = '%s %s' % (self.first_name, self.last_name)
+        return full_name.strip()
 
-class PenatesserverDjangouserGroups(models.Model):
-    djangouser = models.ForeignKey(PenatesserverDjangouser)
-    group_id = models.IntegerField()
-
-    class Meta(object):
-        managed = False
-        db_table = 'penatesserver_djangouser_groups'
-        unique_together = (('djangouser', 'group_id'),)
+    def get_short_name(self):
+        """Returns the short name for the user."""
+        return self.first_name
