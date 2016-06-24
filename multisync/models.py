@@ -134,3 +134,107 @@ class Djangouser(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         """Returns the short name for the user."""
         return self.first_name
+
+
+class GitlabUser(models.Model):
+    id = models.IntegerField(primary_key=True)
+    email = models.CharField(max_length=255, null=False, blank=True, default="")
+    encrypted_password = models.CharField(max_length=255, null=False, blank=True, default="")
+    reset_password_token = models.CharField(max_length=255, null=True, blank=True, default=None)
+    reset_password_sent_at = models.DateTimeField(blank=True, null=True, default=None)
+    remember_created_at = models.DateTimeField(blank=True, null=True, default=None)
+    sign_in_count = models.IntegerField(blank=True, default=0, null=True)
+    current_sign_in_at = models.DateTimeField(blank=True, null=True, default=None)
+    last_sign_in_at = models.DateTimeField(blank=True, null=True, default=None)
+    current_sign_in_ip = models.CharField(max_length=255, null=True, blank=True, default=None)
+    last_sign_in_ip = models.CharField(max_length=255, null=True, blank=True, default=None)
+    created_at = models.DateTimeField(blank=True, null=True, default=None)
+    updated_at = models.DateTimeField(blank=True, null=True, default=None)
+    name = models.CharField(max_length=255, null=True, blank=True, default=None)
+    admin = models.BooleanField(default=False, null=False)
+    projects_limit = models.IntegerField(blank=True, default=10, null=True)
+    skype = models.CharField(max_length=255, null=False, blank=True, default="")
+    linkedin = models.CharField(max_length=255, null=False, blank=True, default="")
+    twitter = models.CharField(max_length=255, null=False, blank=True, default="")
+    authentication_token = models.CharField(max_length=255, null=True, blank=True, default=None)
+    theme_id = models.IntegerField(blank=True, default=1, null=False)
+    bio = models.CharField(max_length=255, null=True, blank=True, default=None)
+    failed_attempts = models.IntegerField(blank=True, default=0, null=True)
+    locked_at = models.DateTimeField(blank=True, null=True, default=None)
+    username = models.CharField(max_length=255, null=True, blank=True, default=None)
+    can_create_group = models.BooleanField(default=True, null=False)
+    can_create_team = models.BooleanField(default=True, null=False)
+    state = models.CharField(max_length=255, null=True, blank=True, default=None)
+    color_scheme_id = models.IntegerField(blank=True, default=1, null=False)
+    password_expires_at = models.DateTimeField(blank=True, null=True, default=None)
+    created_by_id = models.IntegerField(blank=True, default=None, null=True)
+    last_credential_check_at = models.DateTimeField(blank=True, null=True, default=None)
+    avatar = models.CharField(max_length=255, null=True, blank=True, default=None)
+    confirmation_token = models.CharField(max_length=255, null=True, blank=True, default=None)
+    confirmed_at = models.DateTimeField(blank=True, null=True, default=None)
+    confirmation_sent_at = models.DateTimeField(blank=True, null=True, default=None)
+    unconfirmed_email = models.CharField(max_length=255, null=True, blank=True, default=None)
+    hide_no_ssh_key = models.BooleanField(default=False, null=True)
+    website_url = models.CharField(max_length=255, null=False, blank=True, default="")
+    notification_email = models.CharField(max_length=255, null=True, blank=True, default=None)
+    hide_no_password = models.CharField(default=False, null=True)
+    password_automatically_set = models.BooleanField(default=False, null=True)
+    location = models.CharField(max_length=255, null=True, blank=True, default=None)
+    encrypted_otp_secret = models.CharField(max_length=255, null=True, blank=True, default=None)
+    encrypted_otp_secret_iv = models.CharField(max_length=255, null=True, blank=True, default=None)
+    encrypted_otp_secret_salt = models.CharField(max_length=255, null=True, blank=True, default=None)
+    otp_required_for_login = models.BooleanField(default=False, null=False)
+    otp_backup_codes = models.TextField(blank=True, null=True, default=None)
+    public_email = models.CharField(max_length=255, null=False, blank=True, default="")
+    dashboard = models.IntegerField(blank=True, default=0, null=True)
+    project_view = models.IntegerField(blank=True, default=0, null=True)
+    consumed_timestep = models.IntegerField(blank=True, default=None, null=True)
+    layout = models.IntegerField(blank=True, default=0, null=True)
+    hide_project_limit = models.BooleanField(default=False, null=True)
+    unlock_token = models.CharField(max_length=255, null=True, blank=True, default=None)
+    otp_grace_period_started_at = models.DateTimeField(blank=True, null=True, default=None)
+    ldap_email = models.BooleanField(default=False, null=False)
+    external = models.BooleanField(default=False, null=True)
+
+    class Meta(object):
+        managed = False
+        db_table = 'users'
+
+
+class GitlabGroup(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(blank=True, max_length=255, null=False, default="")
+    path = models.CharField(blank=True, max_length=255, null=False, default="")
+    owner_id = models.CharField(blank=True, null=True, default=None)
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
+    type = models.CharField(blank=True, max_length=255, null=True, default=None)
+    description = models.CharField(blank=True, max_length=255, null=False, default="")
+    avatar = models.CharField(blank=True, max_length=255, null=True, default=None)
+    share_with_group_lock = models.BooleanField(blank=True, null=True, default=False)
+    visibility_level = models.IntegerField(blank=True, null=False, default=20)
+
+    class Meta(object):
+        managed = False
+        db_table = 'namespaces'
+
+
+class GitlabMembers(models.Model):
+    id = models.IntegerField(primary_key=True)
+    access_level = models.IntegerField(null=False, default=0)
+    source_id = models.IntegerField(null=False, default=0)
+    source_type = models.CharField(max_length=255, blank=True, default="", null=False)
+    user_id = models.IntegerField(null=True, default=None)
+    notification_level = models.IntegerField(null=False, default=3)
+    type = models.CharField(max_length=255, blank=True, default=None, null=True)
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
+    created_by_id = models.IntegerField(null=True, default=None)
+    invite_email = models.CharField(max_length=255, blank=True, default=None, null=True)
+    invite_token = models.CharField(max_length=255, blank=True, default=None, null=True)
+    invite_accepted_at = models.DateTimeField(blank=True, null=True, default=None)
+    requested_at = models.DateTimeField(blank=True, null=True, default=None)
+
+    class Meta(object):
+        managed = False
+        db_table = 'members'

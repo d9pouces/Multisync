@@ -38,6 +38,9 @@ class NrpeCheck(BaseCommand):
         if synchronizer.created_ids:
             output += ('Created groups: %s\n' % ', '.join(synchronizer.created_ids))
             exit_code = max(exit_code, 1)
+        if synchronizer.modified_ids:
+            output += ('Modified groups: %s\n' % ', '.join(synchronizer.modified_ids))
+            exit_code = max(exit_code, 1)
         if synchronizer.deleted_ids:
             output += ('Deleted groups: %s\n' % ', '.join(synchronizer.deleted_ids))
             exit_code = max(exit_code, 1)

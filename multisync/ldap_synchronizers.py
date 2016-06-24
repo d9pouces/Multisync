@@ -32,6 +32,7 @@ class LdapUserSynchronizer(Synchronizer):
 class LdapGroupSynchronizer(Synchronizer):
     def __init__(self):
         self.deleted_ids = []
+        self.modified_ids = []
         self.created_ids = []
 
     def get_ref_elements(self):
