@@ -137,7 +137,7 @@ class Djangouser(AbstractBaseUser, PermissionsMixin):
 
 
 class GitlabUser(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     email = models.CharField(max_length=255, null=False, blank=True, default="")
     encrypted_password = models.CharField(max_length=255, null=False, blank=True, default="")
     reset_password_token = models.CharField(max_length=255, null=True, blank=True, default=None)
@@ -148,8 +148,8 @@ class GitlabUser(models.Model):
     last_sign_in_at = models.DateTimeField(blank=True, null=True, default=None)
     current_sign_in_ip = models.CharField(max_length=255, null=True, blank=True, default=None)
     last_sign_in_ip = models.CharField(max_length=255, null=True, blank=True, default=None)
-    created_at = models.DateTimeField(blank=True, null=True, default=None)
-    updated_at = models.DateTimeField(blank=True, null=True, default=None)
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
     name = models.CharField(max_length=255, null=True, blank=True, default=None)
     admin = models.BooleanField(default=False, null=False)
     projects_limit = models.IntegerField(blank=True, default=10, null=True)
@@ -164,7 +164,7 @@ class GitlabUser(models.Model):
     username = models.CharField(max_length=255, null=True, blank=True, default=None)
     can_create_group = models.BooleanField(default=True, null=False)
     can_create_team = models.BooleanField(default=True, null=False)
-    state = models.CharField(max_length=255, null=True, blank=True, default=None)
+    state = models.CharField(max_length=255, null=False, blank=True, default='active')
     color_scheme_id = models.IntegerField(blank=True, default=1, null=False)
     password_expires_at = models.DateTimeField(blank=True, null=True, default=None)
     created_by_id = models.IntegerField(blank=True, default=None, null=True)
@@ -202,7 +202,7 @@ class GitlabUser(models.Model):
 
 
 class GitlabGroup(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     name = models.CharField(blank=True, max_length=255, null=False, default="")
     path = models.CharField(blank=True, max_length=255, null=False, default="")
     owner_id = models.CharField(blank=True, null=True, default=None)
@@ -220,7 +220,7 @@ class GitlabGroup(models.Model):
 
 
 class GitlabMembers(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     access_level = models.IntegerField(null=False, default=0)
     source_id = models.IntegerField(null=False, default=0)
     source_type = models.CharField(max_length=255, blank=True, default="", null=False)
@@ -233,7 +233,7 @@ class GitlabMembers(models.Model):
     invite_email = models.CharField(max_length=255, blank=True, default=None, null=True)
     invite_token = models.CharField(max_length=255, blank=True, default=None, null=True)
     invite_accepted_at = models.DateTimeField(blank=True, null=True, default=None)
-    requested_at = models.DateTimeField(blank=True, null=True, default=None)
+    # requested_at = models.DateTimeField(blank=True, null=True, default=None)
 
     class Meta(object):
         managed = False

@@ -26,7 +26,7 @@ class GitlabUserSynchronizer(LdapUserSynchronizer):
 
     def prepare_delete_copy_element(self, copy_element):
         assert isinstance(copy_element, self.user_cls)
-        if copy_element.is_superuser:
+        if copy_element.admin:
             self.error_ids.append(copy_element.username)
         self.deleted_ids.append(copy_element.username)
         return copy_element.pk
@@ -52,8 +52,13 @@ class GitlabUserSynchronizer(LdapUserSynchronizer):
         copy_element.admin = is_admin(copy_element.username)
         must_save |= copy_element.email != ref_element.mail
         copy_element.email = ref_element.mail
-        must_save |= copy_element.name != ref_element.display_name
-        copy_element.name = ref_element.display_name
+        must_save |= copy_element.state != 'active'
+        copy_element.state = 'active'
+        expected_name = ref_element.display_name if ref_element.display_name.strip() else ref_element.name
+        if is_admin(copy_element.username):
+            expected_name += ' [Admin]'
+        must_save |= copy_element.name != expected_name
+        copy_element.name = expected_name
         return must_save
 
     def update_copy_element(self, copy_element, ref_element):
@@ -98,19 +103,19 @@ class GitlabGroupSynchronizer(LdapGroupSynchronizer):
         must_save = False
         if copy_element.name in self.usernames:
             must_save |= (copy_element.owner_id != self.usernames[copy_element.name])
-            must_save |= (copy_element.type != 'Group')
             copy_element.owner_id = self.usernames[copy_element.name]
-            copy_element.type = 'Group'
+            must_save |= (copy_element.type is not None)
+            copy_element.type = None
         else:
             must_save |= (copy_element.owner_id is not None)
-            must_save |= (copy_element.type is not None)
             copy_element.owner_id = None
-            copy_element.type = None
+            must_save |= (copy_element.type != 'Group')
+            copy_element.type = 'Group'
         return must_save
 
     def prepare_new_copy_element(self, ref_element):
         assert isinstance(ref_element, LdapGroup)
-        copy_element = self.group_cls(name=slugify(ref_element.name), path=slugify(ref_element.name),
+        copy_element = self.group_cls(name=ref_element.name, path=slugify(ref_element.name),
                                       visibility_level=20)
         self.finalize_element(copy_element)
         self.created_ids.append(copy_element.name)
@@ -119,7 +124,7 @@ class GitlabGroupSynchronizer(LdapGroupSynchronizer):
     def update_copy_element(self, copy_element, ref_element):
         if self.finalize_element(copy_element):
             copy_element.save()
-            self.modified_ids.append(copy_element.username)
+            self.modified_ids.append(copy_element.name)
 
     def create_copy_elements(self, prepared_copy_elements):
         self.group_cls.objects.bulk_create(prepared_copy_elements)
