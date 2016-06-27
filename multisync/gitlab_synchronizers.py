@@ -26,6 +26,8 @@ class GitlabUserSynchronizer(LdapUserSynchronizer):
 
     def prepare_delete_copy_element(self, copy_element):
         assert isinstance(copy_element, self.user_cls)
+        if copy_element.state != 'active':
+            return None
         if copy_element.admin:
             self.error_ids.append(copy_element.username)
         self.deleted_ids.append(copy_element.username)
@@ -36,7 +38,7 @@ class GitlabUserSynchronizer(LdapUserSynchronizer):
         return copy_element.username
 
     def delete_copy_elements(self, prepared_copy_elements):
-        self.user_cls.objects.filter(pk__in=prepared_copy_elements).delete()
+        self.user_cls.objects.filter(pk__in=prepared_copy_elements).update(state='blocked')
 
     def prepare_new_copy_element(self, ref_element):
         assert isinstance(ref_element, LdapUser)
