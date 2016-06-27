@@ -91,6 +91,8 @@ class GitlabGroupSynchronizer(LdapGroupSynchronizer):
 
     def prepare_delete_copy_element(self, copy_element):
         assert isinstance(copy_element, self.group_cls)
+        if copy_element.name in self.usernames:
+            return None
         self.deleted_ids.append(copy_element.name)
         return copy_element.pk
 
@@ -99,6 +101,7 @@ class GitlabGroupSynchronizer(LdapGroupSynchronizer):
         return copy_element.name
 
     def delete_copy_elements(self, prepared_copy_elements):
+        prepared_copy_elements = filter(lambda x: x, prepared_copy_elements)
         self.group_cls.objects.filter(pk__in=prepared_copy_elements).delete()
 
     def finalize_element(self, copy_element):
@@ -149,6 +152,7 @@ class GitlabUserGroupsSynchronizer(LdapUserGroupsSynchronizer):
         self.user_name_to_id = {x.username: x.pk for x in GitlabUser.objects.filter(pk__in=self.user_pks)}
 
     def create_copy_elements(self, prepared_copy_elements):
+        prepared_copy_elements = filter(lambda x: x, prepared_copy_elements)
         self.cls.objects.bulk_create(prepared_copy_elements)
 
     def get_copy_elements(self):
@@ -160,6 +164,8 @@ class GitlabUserGroupsSynchronizer(LdapUserGroupsSynchronizer):
 
     def prepare_new_copy_element(self, ref_element):
         group_name, user_name = ref_element
+        if group_name in self.user_name_to_id:  # do not add users to user namespaces
+            return None
         self.created_ids.setdefault(group_name, []).append(user_name)
         return self.cls(user_id=self.user_name_to_id[user_name],
                         source_id=self.group_name_to_id[group_name], source_type='Namespace', type='GroupMember',
