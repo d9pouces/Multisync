@@ -39,6 +39,7 @@ mv deb_dist/*deb deb
 
 
 # install all packages
+sudo dpkg -i deb/python-pyldap_*.deb
 sudo dpkg -i deb/python-*.deb
 
 set -e
