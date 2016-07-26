@@ -12,22 +12,9 @@ from django.db import models
 from django.utils import timezone
 from ldapdb.models.fields import CharField, IntegerField, ListField, ImageField as ImageField_
 
-
 __author__ = 'flanker'
 name_pattern = r'[a-zA-Z][\w_\-]{0,199}'
 name_validators = [RegexValidator('^%s$' % name_pattern)]
-
-
-def force_bytestrings(unicode_list):
-    """
-     >>> force_bytestrings(['test']) == [b'test']
-     True
-    """
-    return [x.encode('utf-8') for x in unicode_list]
-
-
-def force_bytestring(x):
-    return x.encode('utf-8')
 
 
 # noinspection PyClassHasNoInit
@@ -52,55 +39,54 @@ class BaseLdapModel(ldapdb.models.Model):
 
 class LdapGroup(BaseLdapModel):
     base_dn = '%s,%s' % (settings.LDAP_GROUP_OU, settings.LDAP_BASE_DN)
-    object_classes = force_bytestrings(['posixGroup', 'sambaGroupMapping'])
+    object_classes = ['posixGroup', 'sambaGroupMapping']
     # posixGroup attributes
-    name = CharField(db_column=force_bytestring('cn'), max_length=200, primary_key=True,
+    name = CharField(db_column='cn', max_length=200, primary_key=True,
                      validators=list(name_validators))
-    gid = IntegerField(db_column=force_bytestring('gidNumber'), unique=True)
-    members = ListField(db_column=force_bytestring('memberUid'))
-    description = CharField(db_column=force_bytestring('description'), max_length=500, blank=True, default='')
-    group_type = IntegerField(db_column=force_bytestring('sambaGroupType'), default=None)
-    samba_sid = CharField(db_column=force_bytestring('sambaSID'), unique=True, default='')
+    gid = IntegerField(db_column='gidNumber', unique=True)
+    members = ListField(db_column='memberUid')
+    description = CharField(db_column='description', max_length=500, blank=True, default='')
+    group_type = IntegerField(db_column='sambaGroupType', default=None)
+    samba_sid = CharField(db_column='sambaSID', unique=True, default='')
 
 
 class LdapUser(BaseLdapModel):
     base_dn = '%s,%s' % (settings.LDAP_USER_OU, settings.LDAP_BASE_DN)
-    object_classes = force_bytestrings(['posixAccount', 'shadowAccount', 'inetOrgPerson', 'sambaSamAccount', 'person',
-                                        'AsteriskSIPUser'])
-    name = CharField(db_column=force_bytestring('uid'), max_length=200, primary_key=True,
+    object_classes = ['posixAccount', 'shadowAccount', 'inetOrgPerson', 'sambaSamAccount', 'person', 'AsteriskSIPUser']
+    name = CharField(db_column='uid', max_length=200, primary_key=True,
                      validators=list(name_validators))
-    display_name = CharField(db_column=force_bytestring('displayName'), max_length=200)
-    uid_number = IntegerField(db_column=force_bytestring('uidNumber'), default=None, unique=True)
-    gid_number = IntegerField(db_column=force_bytestring('gidNumber'), default=None)
-    login_shell = CharField(db_column=force_bytestring('loginShell'), default='/bin/bash')
-    description = CharField(db_column=force_bytestring('description'), default='Description')
-    jpeg_photo = ImageField(db_column=force_bytestring('jpegPhoto'), max_length=10000000)
-    phone = CharField(db_column=force_bytestring('telephoneNumber'), default=None)
-    samba_acct_flags = CharField(db_column=force_bytestring('sambaAcctFlags'), default='[UX         ]')
-    user_smime_certificate = CharField(db_column=force_bytestring('userSMIMECertificate'), default=None)
-    user_certificate = CharField(db_column=force_bytestring('userCertificate'), default=None)
+    display_name = CharField(db_column='displayName', max_length=200)
+    uid_number = IntegerField(db_column='uidNumber', default=None, unique=True)
+    gid_number = IntegerField(db_column='gidNumber', default=None)
+    login_shell = CharField(db_column='loginShell', default='/bin/bash')
+    description = CharField(db_column='description', default='Description')
+    jpeg_photo = ImageField(db_column='jpegPhoto', max_length=10000000)
+    phone = CharField(db_column='telephoneNumber', default=None)
+    samba_acct_flags = CharField(db_column='sambaAcctFlags', default='[UX         ]')
+    user_smime_certificate = CharField(db_column='userSMIMECertificate', default=None)
+    user_certificate = CharField(db_column='userCertificate', default=None)
     # forced values
-    samba_sid = CharField(db_column=force_bytestring('sambaSID'), default=None)
-    primary_group_samba_sid = CharField(db_column=force_bytestring('sambaPrimaryGroupSID'), default=None)
-    home_directory = CharField(db_column=force_bytestring('homeDirectory'), default=None)
-    mail = CharField(db_column=force_bytestring('mail'), default=None)
-    samba_domain_name = CharField(db_column=force_bytestring('sambaDomainName'), default=None)
-    gecos = CharField(db_column=force_bytestring('gecos'), max_length=200, default=None)
-    cn = CharField(db_column=force_bytestring('cn'), max_length=200, default=None, validators=list(name_validators))
-    sn = CharField(db_column=force_bytestring('sn'), max_length=200, default=None, validators=list(name_validators))
+    samba_sid = CharField(db_column='sambaSID', default=None)
+    primary_group_samba_sid = CharField(db_column='sambaPrimaryGroupSID', default=None)
+    home_directory = CharField(db_column='homeDirectory', default=None)
+    mail = CharField(db_column='mail', default=None)
+    samba_domain_name = CharField(db_column='sambaDomainName', default=None)
+    gecos = CharField(db_column='gecos', max_length=200, default=None)
+    cn = CharField(db_column='cn', max_length=200, default=None, validators=list(name_validators))
+    sn = CharField(db_column='sn', max_length=200, default=None, validators=list(name_validators))
     # password values
-    user_password = CharField(db_column=force_bytestring('userPassword'), default=None)
-    # samba_nt_password = CharField(db_column=force_bytestring('sambaNTPassword'), default=None)
-    ast_account_caller_id = CharField(db_column=force_bytestring('AstAccountCallerID'), default=None)
-    ast_account_context = CharField(db_column=force_bytestring('AstAccountContext'), default='LocalSets')
-    ast_account_DTMF_mode = CharField(db_column=force_bytestring('AstAccountDTMFMode'), default='rfc2833')
-    ast_account_mailbox = CharField(db_column=force_bytestring('AstAccountMailbox'), default=None)
-    ast_account_NAT = CharField(db_column=force_bytestring('AstAccountNAT'), default='yes')
-    ast_account_qualify = CharField(db_column=force_bytestring('AstAccountQualify'), default='yes')
-    ast_account_type = CharField(db_column=force_bytestring('AstAccountType'), default='friend')
-    ast_account_disallowed_codec = CharField(db_column=force_bytestring('AstAccountDisallowedCodec'), default='all')
-    ast_account_allowed_codec = CharField(db_column=force_bytestring('AstAccountAllowedCodec'), default='ulaw')
-    ast_account_music_on_hold = CharField(db_column=force_bytestring('AstAccountMusicOnHold'), default='default')
+    user_password = CharField(db_column='userPassword', default=None)
+    # samba_nt_password = CharField(db_column=('sambaNTPassword'), default=None)
+    ast_account_caller_id = CharField(db_column='AstAccountCallerID', default=None)
+    ast_account_context = CharField(db_column='AstAccountContext', default='LocalSets')
+    ast_account_DTMF_mode = CharField(db_column='AstAccountDTMFMode', default='rfc2833')
+    ast_account_mailbox = CharField(db_column='AstAccountMailbox', default=None)
+    ast_account_NAT = CharField(db_column='AstAccountNAT', default='yes')
+    ast_account_qualify = CharField(db_column='AstAccountQualify', default='yes')
+    ast_account_type = CharField(db_column='AstAccountType', default='friend')
+    ast_account_disallowed_codec = CharField(db_column='AstAccountDisallowedCodec', default='all')
+    ast_account_allowed_codec = CharField(db_column='AstAccountAllowedCodec', default='ulaw')
+    ast_account_music_on_hold = CharField(db_column='AstAccountMusicOnHold', default='default')
 
 
 class Djangouser(AbstractBaseUser, PermissionsMixin):
@@ -233,6 +219,7 @@ class GitlabMembers(models.Model):
     invite_email = models.CharField(max_length=255, blank=True, default=None, null=True)
     invite_token = models.CharField(max_length=255, blank=True, default=None, null=True)
     invite_accepted_at = models.DateTimeField(blank=True, null=True, default=None)
+
     # requested_at = models.DateTimeField(blank=True, null=True, default=None)
 
     class Meta(object):
