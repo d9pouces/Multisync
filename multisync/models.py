@@ -4,8 +4,11 @@ from __future__ import unicode_literals
 
 import ldapdb.models
 from django.conf import settings
+from django.contrib import auth
 from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import UserManager, PermissionsMixin
+# noinspection PyProtectedMember
+from django.contrib.auth.models import UserManager, Group, Permission, _user_get_all_permissions, _user_has_perm, \
+    _user_has_module_perms
 from django.core import validators
 from django.core.validators import RegexValidator
 from django.db import models
@@ -89,6 +92,73 @@ class LdapUser(BaseLdapModel):
     ast_account_music_on_hold = CharField(db_column='AstAccountMusicOnHold', default='default')
 
 
+class PermissionsMixin(models.Model):
+    """
+    A mixin class that adds the fields and methods necessary to support
+    Django's Group and Permission model using the ModelBackend.
+    """
+    is_superuser = models.BooleanField(default=False)
+    groups = models.ManyToManyField(Group, blank=True, related_name="djangouser_set", related_query_name="user")
+    user_permissions = models.ManyToManyField(Permission, blank=True,
+                                              related_name="djangouser_set", related_query_name="user")
+
+    class Meta:
+        abstract = True
+
+    def get_group_permissions(self, obj=None):
+        """
+        Returns a list of permission strings that this user has through their
+        groups. This method queries all available auth backends. If an object
+        is passed in, only permissions matching this object are returned.
+        """
+        permissions = set()
+        for backend in auth.get_backends():
+            if hasattr(backend, "get_group_permissions"):
+                permissions.update(backend.get_group_permissions(self, obj))
+        return permissions
+
+    def get_all_permissions(self, obj=None):
+        return _user_get_all_permissions(self, obj)
+
+    def has_perm(self, perm, obj=None):
+        """
+        Returns True if the user has the specified permission. This method
+        queries all available auth backends, but returns immediately if any
+        backend returns True. Thus, a user who has permission from a single
+        auth backend is assumed to have permission in general. If an object is
+        provided, permissions for this specific object are checked.
+        """
+
+        # Active superusers have all permissions.
+        if self.is_active and self.is_superuser:
+            return True
+
+        # Otherwise we need to check the backends.
+        return _user_has_perm(self, perm, obj)
+
+    def has_perms(self, perm_list, obj=None):
+        """
+        Returns True if the user has each of the specified permissions. If
+        object is passed, it checks if the user has all required perms for this
+        object.
+        """
+        for perm in perm_list:
+            if not self.has_perm(perm, obj):
+                return False
+        return True
+
+    def has_module_perms(self, app_label):
+        """
+        Returns True if the user has any permissions in the given app label.
+        Uses pretty much the same logic as has_perm, above.
+        """
+        # Active superusers have all permissions.
+        if self.is_active and self.is_superuser:
+            return True
+
+        return _user_has_module_perms(self, app_label)
+
+
 class Djangouser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField('username', max_length=250, unique=True,
                                 help_text='Required. Letters, digits and "/"/@/./+/-/_ only.',
@@ -160,11 +230,11 @@ class GitlabUser(models.Model):
     confirmed_at = models.DateTimeField(blank=True, null=True, default=None)
     confirmation_sent_at = models.DateTimeField(blank=True, null=True, default=None)
     unconfirmed_email = models.CharField(max_length=255, null=True, blank=True, default=None)
-    hide_no_ssh_key = models.BooleanField(default=False, null=True)
+    hide_no_ssh_key = models.BooleanField(default=False)
     website_url = models.CharField(max_length=255, null=False, blank=True, default="")
     notification_email = models.CharField(max_length=255, null=True, blank=True, default=None)
-    hide_no_password = models.CharField(default=False, null=True)
-    password_automatically_set = models.BooleanField(default=False, null=True)
+    hide_no_password = models.CharField(default=False, null=True, max_length=255)
+    password_automatically_set = models.BooleanField(default=False)
     location = models.CharField(max_length=255, null=True, blank=True, default=None)
     encrypted_otp_secret = models.CharField(max_length=255, null=True, blank=True, default=None)
     encrypted_otp_secret_iv = models.CharField(max_length=255, null=True, blank=True, default=None)
@@ -176,11 +246,11 @@ class GitlabUser(models.Model):
     project_view = models.IntegerField(blank=True, default=0, null=True)
     consumed_timestep = models.IntegerField(blank=True, default=None, null=True)
     layout = models.IntegerField(blank=True, default=0, null=True)
-    hide_project_limit = models.BooleanField(default=False, null=True)
+    hide_project_limit = models.BooleanField(default=False)
     unlock_token = models.CharField(max_length=255, null=True, blank=True, default=None)
     otp_grace_period_started_at = models.DateTimeField(blank=True, null=True, default=None)
-    ldap_email = models.BooleanField(default=False, null=False)
-    external = models.BooleanField(default=False, null=True)
+    ldap_email = models.BooleanField(default=False)
+    external = models.BooleanField(default=False)
 
     class Meta(object):
         managed = False
@@ -191,13 +261,13 @@ class GitlabGroup(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(blank=True, max_length=255, null=False, default="")
     path = models.CharField(blank=True, max_length=255, null=False, default="")
-    owner_id = models.CharField(blank=True, null=True, default=None)
+    owner_id = models.CharField(blank=True, null=True, default=None, max_length=500)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
     type = models.CharField(blank=True, max_length=255, null=True, default=None)
     description = models.CharField(blank=True, max_length=255, null=False, default="")
     avatar = models.CharField(blank=True, max_length=255, null=True, default=None)
-    share_with_group_lock = models.BooleanField(blank=True, null=True, default=False)
+    share_with_group_lock = models.BooleanField(blank=True, default=False)
     visibility_level = models.IntegerField(blank=True, null=False, default=20)
 
     class Meta(object):
