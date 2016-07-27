@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+from django.utils.encoding import force_text
+from djangofloor.utils import CallableSetting
+
 __author__ = 'Matthieu Gallet'
 
 ########################################################################################################################
@@ -38,9 +42,9 @@ DATABASES = {
     },
     'ldap': {
         'ENGINE': 'ldapdb.backends.ldap',
-        'NAME': '{LDAP_NAME}',
-        'USER': '{LDAP_USER}',
-        'PASSWORD': '{LDAP_PASSWORD}',
+        'NAME': CallableSetting(lambda x: force_text(x['LDAP_NAME']), 'LDAP_NAME'),
+        'USER': CallableSetting(lambda x: force_text(x['LDAP_USER']), 'LDAP_USER'),
+        'PASSWORD': CallableSetting(lambda x: force_text(x['LDAP_PASSWORD']), 'LDAP_PASSWORD'),
     },
 }
 

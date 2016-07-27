@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import json
 
+from django.utils.encoding import force_text
 from djangofloor.iniconf import OptionParser
 
 __author__ = 'Matthieu Gallet'
@@ -22,12 +23,12 @@ INI_MAPPING = [
     OptionParser('DATABASE_USER_EXCLUDE_KWARGS', 'database.user_exclude', converter=json.loads, to_str=json.dumps),
     OptionParser('AUTH_USER_MODEL', 'multisync.auth_user_model'),
 
-    OptionParser('LDAP_BASE_DN', 'ldap.base_dn', converter=unicode),
-    OptionParser('LDAP_NAME', 'ldap.name', converter=unicode),
-    OptionParser('LDAP_USER', 'ldap.user', converter=unicode),
-    OptionParser('LDAP_PASSWORD', 'ldap.password', converter=unicode),
-    OptionParser('LDAP_GROUP_OU', 'ldap.group_ou', converter=unicode),
-    OptionParser('LDAP_USER_OU', 'ldap.user_ou', converter=unicode),
+    OptionParser('LDAP_BASE_DN', 'ldap.base_dn', converter=force_text),
+    OptionParser('LDAP_NAME', 'ldap.name', converter=force_text),
+    OptionParser('LDAP_USER', 'ldap.user', converter=force_text),
+    OptionParser('LDAP_PASSWORD', 'ldap.password', converter=force_text),
+    OptionParser('LDAP_GROUP_OU', 'ldap.group_ou', converter=force_text),
+    OptionParser('LDAP_USER_OU', 'ldap.user_ou', converter=force_text),
 
     OptionParser('LDAP_GROUP_FILTER_KWARGS', 'ldap.group_filter', converter=json.loads, to_str=json.dumps),
     OptionParser('LDAP_GROUP_EXCLUDE_KWARGS', 'ldap.group_exclude', converter=json.loads, to_str=json.dumps),
