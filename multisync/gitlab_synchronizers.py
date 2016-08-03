@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import hashlib
+import os
+import random
+import re
+import sre_compile
+import subprocess
+
 from django.conf import settings
+from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 
@@ -11,6 +19,11 @@ from multisync.nrpe import NrpeCheck
 from multisync.synchronizer import is_admin
 
 __author__ = 'Matthieu Gallet'
+
+
+
+def quote(text):
+    return text.replace('"', '\\"')
 
 
 class GitlabUserSynchronizer(LdapUserSynchronizer):
@@ -38,6 +51,8 @@ class GitlabUserSynchronizer(LdapUserSynchronizer):
         return copy_element.username
 
     def delete_copy_elements(self, prepared_copy_elements):
+        prepared_copy_elements = [x for x in prepared_copy_elements]
+        # required since prepare_delete_copy_element() can return None
         self.user_cls.objects.filter(pk__in=prepared_copy_elements).update(state='blocked')
 
     def prepare_new_copy_element(self, ref_element):
@@ -71,7 +86,28 @@ class GitlabUserSynchronizer(LdapUserSynchronizer):
             self.modified_ids.append(copy_element.username)
 
     def create_copy_elements(self, prepared_copy_elements):
-        self.user_cls.objects.bulk_create(prepared_copy_elements)
+        content = ""
+        for copy_element in prepared_copy_elements:
+            password = get_random_string(length=30)
+            value = "User.new do |u|\n"
+            if copy_element.admin:
+                value += "    u.admin = true\n"
+            value += '    u.email = "%s"\n' % quote(copy_element.email)
+            value += '    u.name = "%s"\n' % quote(copy_element.name)
+            value += '    u.username = "%s"\n' % quote(copy_element.username)
+            value += '    u.state = "active"\n'
+            value += '    u.confirmed_at = Time.now\n'
+            value += '    u.confirmation_token = nil\n'
+            value += '    u.password_automatically_set = true\n'
+            value += '    u.password = "%s"\n' % password
+            value += '    u.password_confirmation = "%s"\n' % password
+            value += '    u.save!\n'
+            value += "end\n"
+            content += value
+        if content:
+            p = subprocess.Popen(['gitlab-rails', 'console', 'production'], stdin=subprocess.PIPE,
+                                 stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
+            p.communicate(content.encode('utf-8'))
 
 
 class GitlabGroupSynchronizer(LdapGroupSynchronizer):
