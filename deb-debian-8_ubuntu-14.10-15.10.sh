@@ -21,6 +21,7 @@ mkvirtualenv -p `which python` djangofloor
 workon djangofloor
 pip install setuptools --upgrade
 pip install pip --upgrade
+pip install 'Django==1.9.9'
 pip install debtools djangofloor
 set -e
 python setup.py install
