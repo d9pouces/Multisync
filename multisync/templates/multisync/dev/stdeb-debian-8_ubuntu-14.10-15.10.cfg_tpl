@@ -1,0 +1,5 @@
+{% extends "djangofloor/dev/stdeb-debian-8_ubuntu-14.10-15.10.cfg_tpl" %}
+{% block project %}{% endblock %}
+
+{% block multideb_extra_exclude %}    python-ldap
+{% endblock %}

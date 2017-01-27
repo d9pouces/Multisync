@@ -21,7 +21,7 @@ Here is the complete list of settings:
   # SQL database engine, can be 'django.db.backends.[postgresql_psycopg2|mysql|sqlite3|oracle]'.
   host = 
   # Empty for localhost through domain sockets or "127.0.0.1" for localhost + TCP
-  name = ./django_data/data/database.sqlite3
+  name = /home/mgallet/.virtualenvs/multisync/local/var/multisync/data/database.sqlite3
   # Name of your database, or path to database file if using sqlite3.
   password = 
   # Database password (not used with sqlite3)
@@ -56,7 +56,7 @@ Here is the complete list of settings:
   [prosody]
   domain = im.example.org
   # Domain to append to the Prosody's usernames
-  group_file = ./django_data/groups.ini
+  group_file = /home/mgallet/.virtualenvs/multisync/local/var/multisync/groups.ini
   # path of the generated Prosody config file. See `https://prosody.im/doc/modules/mod_groups#example` for more info.
 
 
@@ -145,7 +145,7 @@ If you have a lot of files to backup, beware of the available disk place!
   touch /var/backups/multisync/backup_media.tar.gz
   crontab -e
   MAILTO=admin@localhost
-  0 3 * * * rsync -arltDE ./django_data/data/media/ /var/backups/multisync/media/
+  0 3 * * * rsync -arltDE /home/mgallet/.virtualenvs/multisync/local/var/multisync/data/media/ /var/backups/multisync/media/
   0 5 0 * * logrotate -f /home/multisync/.virtualenvs/multisync/etc/multisync/backup_media.conf
 
 Restoring a backup
@@ -154,7 +154,7 @@ Restoring a backup
 .. code-block:: bash
 
   cat /var/backups/multisync/backup_db.sql.gz | gunzip | /home/multisync/.virtualenvs/multisync/bin/multisync-manage dbshell
-  tar -C ./django_data/data/media/ -xf /var/backups/multisync/backup_media.tar.gz
+  tar -C /home/mgallet/.virtualenvs/multisync/local/var/multisync/data/media/ -xf /var/backups/multisync/backup_media.tar.gz
 
 
 
@@ -163,6 +163,9 @@ Restoring a backup
 Monitoring
 ----------
 
+
+Nagios or Shinken
+~~~~~~~~~~~~~~~~~
 
 You can use Nagios checks to monitor several points:
 
@@ -195,6 +198,16 @@ For using Sentry to log errors, you must add `raven.contrib.django.raven_compat`
 
   [global]
   extra_apps = raven.contrib.django.raven_compat
+  [sentry]
+  dsn_url = https://[key]:[secret]@app.getsentry.com/[project]
+
+Of course, the Sentry client (Raven) must be separately installed, before testing the installation:
+
+.. code-block:: bash
+
+  sudo -u multisync -i
+  multisync-manage raven test
+
 
 
 

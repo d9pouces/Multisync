@@ -24,10 +24,7 @@ Database
 
 You should not have to create a user or a database for MultiSync since its role is to reuse the database/tables of an
 existing application.
-MultiSync is able to deal with all standard Django database servers: PostgreSQL, SQLite, MySQL or OracleDB.
-
-
-
+MultiSync deals with all standard Django database servers: PostgreSQL, SQLite, MySQL or OracleDB.
 
 
 Application
@@ -39,9 +36,9 @@ since this file should not be readable by other users.
 
 .. code-block:: bash
 
-    sudo mkdir -p ./django_data
+    sudo mkdir -p /home/mgallet/.virtualenvs/multisync/local/var/multisync
     sudo adduser --disabled-password multisync
-    sudo chown multisync:www-data ./django_data
+    sudo chown multisync:www-data /home/mgallet/.virtualenvs/multisync/local/var/multisync
     sudo apt-get install virtualenvwrapper python2.7 python2.7-dev build-essential postgresql-client libpq-dev
     # application
     sudo -u multisync -i
@@ -55,7 +52,7 @@ since this file should not be readable by other users.
     [database]
     engine = django.db.backends.sqlite3
     host = 
-    name = ./django_data/data/database.sqlite3
+    name = /home/mgallet/.virtualenvs/multisync/local/var/multisync/data/database.sqlite3
     password = 
     port = 
     user = 
@@ -75,14 +72,12 @@ since this file should not be readable by other users.
     synchronizer = multisync.django_synchronizers.DjangoSynchronizer
     [prosody]
     domain = im.example.org
-    group_file = ./django_data/groups.ini
+    group_file = /home/mgallet/.virtualenvs/multisync/local/var/multisync/groups.ini
     EOF
-
-
 
 Crontab
 -------
-MultiSync is designed to be launched via a crontab script.
+MultiSync is designed to be launched via a crontab script, but can also be run as a plain Nagios check (if nagios as a read access to the conf).
 
 
 

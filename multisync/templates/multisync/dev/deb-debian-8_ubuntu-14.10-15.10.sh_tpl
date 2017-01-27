@@ -1,0 +1,12 @@
+{% extends "djangofloor/dev/deb-debian-8_ubuntu-14.10-15.10.sh_tpl" %}
+{% block extra_dependencies %}sudo apt-get install --yes python-ldap libldap2-dev libsasl2-dev python-futures
+{% endblock %}
+
+
+{% block installation %}
+# install all packages
+sudo dpkg -i deb/python{% if use_python3 %}3{% endif %}-*.deb
+{% endblock %}
+
+{% block tear_down %}set -e
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'djangofloor/dev/vagrant/ubuntu-15.04/Vagrantfile_tpl' %}
+{% block vm_provision %}  config.vm.provision "shell", inline: <<-SHELL
+    sudo apt-get update
+    sudo apt-get install -y git
+    git clone https://github.com/d9pouces/MultiSync.git
+    chown -R vagrant:vagrant MultiSync
+  SHELL
+{% endblock %}

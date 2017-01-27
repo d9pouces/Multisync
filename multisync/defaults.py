@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+from django.utils.encoding import force_text
+from djangofloor.utils import CallableSetting
+
 __author__ = 'Matthieu Gallet'
 
 ########################################################################################################################
@@ -20,9 +24,13 @@ LDAP_USER = 'cn=admin,dc=test,dc=example,dc=org'
 LDAP_USER_HELP = 'LDAP user name to bind with'
 LDAP_PASSWORD = 'toto'
 LDAP_PASSWORD_HELP = 'LDAP password to bind with'
+LDAP_GROUP_FILTER_KWARGS = {}
+LDAP_GROUP_EXCLUDE_KWARGS = {}
+LDAP_USER_FILTER_KWARGS = {}
+LDAP_USER_EXCLUDE_KWARGS = {}
 
 SYNCHRONIZER = 'multisync.django_synchronizers.DjangoSynchronizer'
-
+AUTH_USER_MODEL = 'auth.User'
 DATABASES = {
     'default': {
         'ENGINE': '{DATABASE_ENGINE}',
@@ -34,13 +42,18 @@ DATABASES = {
     },
     'ldap': {
         'ENGINE': 'ldapdb.backends.ldap',
-        'NAME': '{LDAP_NAME}',
-        'USER': '{LDAP_USER}',
-        'PASSWORD': '{LDAP_PASSWORD}',
+        'NAME': CallableSetting(lambda x: force_text(x['LDAP_NAME']), 'LDAP_NAME'),
+        'USER': CallableSetting(lambda x: force_text(x['LDAP_USER']), 'LDAP_USER'),
+        'PASSWORD': CallableSetting(lambda x: force_text(x['LDAP_PASSWORD']), 'LDAP_PASSWORD'),
     },
 }
 
 DATABASE_ROUTERS = ['ldapdb.router.Router', ]
+DATABASE_GROUP_FILTER_KWARGS = {}
+DATABASE_GROUP_EXCLUDE_KWARGS = {}
+DATABASE_USER_FILTER_KWARGS = {}
+DATABASE_USER_EXCLUDE_KWARGS = {}
+
 
 PROSODY_GROUP_FILE = '{LOCAL_PATH}/groups.ini'
 PROSODY_GROUP_FILE_HELP = 'path of the generated Prosody config file. ' \

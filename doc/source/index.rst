@@ -16,9 +16,6 @@ Welcome to MultiSync's documentation!
 
 
 
-
-
-
 Full table of contents
 ======================
 
