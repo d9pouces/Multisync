@@ -18,7 +18,7 @@ for line in codecs.open(os.path.join('multisync', '__init__.py'), 'r', encoding=
 with codecs.open(os.path.join(os.path.dirname(__file__), 'README.md'), encoding='utf-8') as fd:
     long_description = fd.read()
 
-entry_points = {'console_scripts': ['multisync-manage = djangofloor.scripts:manage',
+entry_points = {'console_scripts': ['multisync-django = djangofloor.scripts:manage',
                                     'multisync = multisync.command:main', ]}
 
 setup(name='multisync',
@@ -34,6 +34,6 @@ setup(name='multisync',
       include_package_data=True,
       zip_safe=False,
       test_suite='multisync.tests',
-      install_requires=['djangofloor', 'django-ldapdb', ],
+      install_requires=['djangofloor', 'pyldap', 'django-ldapdb', ],
       setup_requires=[],
       classifiers=[], )
