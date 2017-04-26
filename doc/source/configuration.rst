@@ -18,7 +18,7 @@ Here is the complete list of settings:
 
   [database]
   engine = django.db.backends.sqlite3
-  # SQL database engine, can be 'django.db.backends.[postgresql_psycopg2|mysql|sqlite3|oracle]'.
+  # SQL database engine, can be 'django.db.backends.[postgresql|mysql|sqlite3|oracle]'.
   host = 
   # Empty for localhost through domain sockets or "127.0.0.1" for localhost + TCP
   name = /home/mgallet/.virtualenvs/multisync/local/var/multisync/data/database.sqlite3
